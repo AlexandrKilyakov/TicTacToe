@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Крестики нолики</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Teko&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/css/normalize.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="con">
+        <div class="logo"></div>
+        <button class="restart"></button>
+      </div>
+    </header>
+    <main class="main con">
+      <div class="game">
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+        <div class="place"></div>
+      </div>
+    </main>
+    <footer class="footer con">
+      <div class="static" data-static="player">
+        <p class="name">Игрок</p>
+        <p class="value" data-value>0</p>
+      </div>
+      <div class="static" data-static="tie">
+        <p class="name">Ничья</p>
+        <p class="value" data-value>0</p>
+      </div>
+      <div class="static" data-static="bot">
+        <p class="name">Бот</p>
+        <p class="value" data-value>0</p>
+      </div>
+    </footer>
+    <script src="./assets/js/script.js" defer></script>
+  </body>
+</html>
