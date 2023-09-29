@@ -115,13 +115,26 @@ body {
   cursor: pointer;
 }
 
-[data-unit="x"] .place:not([class*="here"]):hover {
-  background-image: url("../svg/x-hover.svg");
+@media (hover: hover) {
+  [data-unit="x"] .place:not([class*="here"]):hover {
+    background-image: url("../svg/x-hover.svg");
+  }
+
+  .logo::after,
+  [data-unit="o"] .place:not([class*="here"]):hover {
+    background-image: url("../svg/o-hover.svg");
+  }
 }
 
-.logo::after,
-[data-unit="o"] .place:not([class*="here"]):hover {
-  background-image: url("../svg/o-hover.svg");
+@media (hover: none) {
+  [data-unit="x"] .place:not([class*="here"]):active {
+    background-image: url("../svg/x-hover.svg");
+  }
+
+  .logo::after,
+  [data-unit="o"] .place:not([class*="here"]):active {
+    background-image: url("../svg/o-hover.svg");
+  }
 }
 
 .logo {
@@ -148,6 +161,14 @@ body {
   transition: 0.1s background-color;
 }
 
-.restart:hover {
-  background-color: var(--blue);
+@media (hover: hover) {
+  .restart:hover {
+    background-color: var(--blue);
+  }
+}
+
+@media (hover: none) {
+  .restart:active {
+    background-color: var(--blue);
+  }
 }
