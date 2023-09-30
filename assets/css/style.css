@@ -92,7 +92,7 @@ body {
   gap: var(--gap);
 }
 
-.place {
+.point {
   width: calc(var(--width) - var(--gap));
   height: auto;
   aspect-ratio: 1/1;
@@ -103,36 +103,38 @@ body {
   border-radius: 8px;
 }
 
-.place.here-x {
+.point.here-x {
   background-image: url("../svg/x.svg");
+  pointer-events: none;
 }
 
-.place.here-o {
+.point.here-o {
   background-image: url("../svg/o.svg");
+  pointer-events: none;
 }
 
-.place:not([class*="here"]) {
+.point:not([class*="here"]) {
   cursor: pointer;
 }
 
 @media (hover: hover) {
-  [data-unit="x"] .place:not([class*="here"]):hover {
+  [data-unit="x"] .point:not([class*="here"]):hover {
     background-image: url("../svg/x-hover.svg");
   }
 
   .logo::after,
-  [data-unit="o"] .place:not([class*="here"]):hover {
+  [data-unit="o"] .point:not([class*="here"]):hover {
     background-image: url("../svg/o-hover.svg");
   }
 }
 
 @media (hover: none) {
-  [data-unit="x"] .place:not([class*="here"]):active {
+  [data-unit="x"] .point:not([class*="here"]):active {
     background-image: url("../svg/x-hover.svg");
   }
 
   .logo::after,
-  [data-unit="o"] .place:not([class*="here"]):active {
+  [data-unit="o"] .point:not([class*="here"]):active {
     background-image: url("../svg/o-hover.svg");
   }
 }
