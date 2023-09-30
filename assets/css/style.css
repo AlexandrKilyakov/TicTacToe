@@ -81,7 +81,7 @@ body {
 }
 
 .game {
-  --k: 3;
+  --size: 3;
   --gap: 8px;
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@ body {
 }
 
 .place {
-  width: calc(100% / var(--k) - var(--gap));
+  width: calc(100% / var(--size) - var(--gap));
   height: auto;
   aspect-ratio: 1/1;
   background-color: var(--bg-light);
