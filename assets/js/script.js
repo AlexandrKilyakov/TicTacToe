@@ -112,6 +112,10 @@ function victoryUnit(unit) {
 }
 
 function restartGame() {
+  victory = false;
+  stepUnits["x"] = getArraySize();
+  stepUnits["o"] = getArraySize();
+
   createGamePoints();
 }
 
@@ -128,7 +132,9 @@ function clickPoint(target) {
   stepUnits[unit][~~point.dataset.y].push(~~point.dataset.x);
   victory = victoryUnit(unit);
 
+  // Если победитель определен
   if (victory) {
+    restartGame();
     return;
   }
 
