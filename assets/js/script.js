@@ -11,7 +11,7 @@ const size = 3;
 function createGamePoints() {
   const n = size ** 2;
 
-  game.style.setProperty("--size", size);
+  game.style.setProperty("--width", `${100 / size}%`);
   game.innerHTML = "";
 
   for (let i = 0; i < n; i++) {
