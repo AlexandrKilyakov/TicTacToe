@@ -51,6 +51,17 @@ function setUnit(unit) {
   game.dataset.unit = changeUnit[unit];
 }
 
+function diagonalCheck(i, item, step, arr) {
+  i++;
+
+  // Если дошли до конца массива
+  if (arr.length <= i) {
+    return true;
+  }
+
+  return arr[i].includes(item) && diagonalCheck(i, item + step, step, arr);
+}
+
 function elementMatches(i, item, arr) {
   i++;
 
@@ -75,7 +86,19 @@ function victoryUnit(unit) {
     }
   }
 
-  // Проверка по диагонали
+  // Проверка по диагонали (по возрастанию)
+  if (!isNaN(stepUnits[unit][0])) {
+    victory = diagonalCheck(-1, 0, 1, stepUnits[unit]);
+  }
+
+  // Проверка по диагонали (по убыванию)
+  if (!isNaN(stepUnits[unit][size - 1]) && !victory) {
+    victory = diagonalCheck(-1, size - 1, -1, stepUnits[unit]);
+  }
+
+  if (victory) {
+    return victory;
+  }
 
   // Есть ли совпадения
   return stepUnits[unit][0].some((item) =>
@@ -101,7 +124,7 @@ function clickPoint(target) {
   stepUnits[unit][~~point.dataset.y].push(~~point.dataset.x);
   victory = victoryUnit(unit);
 
-  console.log(victory);
+  // console.log(victory);
 
   if (victory) {
     return;
