@@ -59,6 +59,11 @@ function diagonalCheck(i, item, step, arr) {
     return true;
   }
 
+  // Если пусто
+  if (!arr[i].length) {
+    return false;
+  }
+
   return arr[i].includes(item) && diagonalCheck(i, item + step, step, arr);
 }
 
@@ -70,16 +75,16 @@ function elementMatches(i, item, arr) {
     return true;
   }
 
+  // Если пусто
+  if (!arr[i].length) {
+    return false;
+  }
+
   return arr[i].includes(item) && elementMatches(i, item, arr);
 }
 
 function victoryUnit(unit) {
   for (element of stepUnits[unit]) {
-    // Если пусто
-    if (!element.length) {
-      return false;
-    }
-
     // Заполнена ли строка
     if (element.length == size) {
       return true;
@@ -124,7 +129,7 @@ function clickPoint(target) {
   stepUnits[unit][~~point.dataset.y].push(~~point.dataset.x);
   victory = victoryUnit(unit);
 
-  // console.log(victory);
+  console.log(victory);
 
   if (victory) {
     return;
