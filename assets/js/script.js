@@ -59,21 +59,23 @@ function elementMatches(i, item, arr) {
     return true;
   }
 
-  // Если пусто
-  if (!arr[i].length) {
-    return false;
-  }
-
   return arr[i].includes(item) && elementMatches(i, item, arr);
 }
 
 function victoryUnit(unit) {
-  // Заполнена ли строка
   for (element of stepUnits[unit]) {
+    // Если пусто
+    if (!element.length) {
+      return false;
+    }
+
+    // Заполнена ли строка
     if (element.length == size) {
       return true;
     }
   }
+
+  // Проверка по диагонали
 
   // Есть ли совпадения
   return stepUnits[unit][0].some((item) =>
