@@ -92,10 +92,6 @@ body {
   gap: var(--gap);
 }
 
-.game.finish {
-  pointer-events: none;
-}
-
 .point {
   width: calc(var(--width) - var(--gap));
   height: auto;
