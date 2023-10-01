@@ -1,4 +1,5 @@
 const TicTacToe = (function () {
+  const size = 3;
   let victory = false;
 
   const selectors = {
@@ -10,15 +11,16 @@ const TicTacToe = (function () {
   const game = document.querySelector(selectors.game);
   const btnRestart = document.querySelector(selectors.restart);
 
-  const size = 3;
   const units = {
     change: {
       x: "o",
       o: "x",
     },
     step: {
-      x: getArraySize(),
-      o: getArraySize(),
+      reset: function () {
+        this.x = getArraySize();
+        this.o = getArraySize();
+      },
     },
     check: {
       horizontal: function (unit) {
@@ -75,17 +77,19 @@ const TicTacToe = (function () {
         return arr[i].includes(item) && this.totalNumber(i, item, arr);
       },
       timeStop: function (i, arr) {
-        // Если дошли до конца массива
-        if (arr.length <= i) {
-          return true;
+        let result = "ok";
+
+        // Если дошли до конца массива или i меньше 0
+        if (!arr[i] || i < 0) {
+          result = true;
         }
 
         // Если пусто
-        if (!arr[i].length) {
-          return false;
+        if (arr[i] && !arr[i].length) {
+          result = false;
         }
 
-        return "ok";
+        return result;
       },
     },
     get: function () {
@@ -99,22 +103,21 @@ const TicTacToe = (function () {
       const horizontal = this.check.horizontal(unit);
       const vertically = this.check.vertically(unit);
       const diagonal = this.check.diagonals(unit);
-
-      console.log(horizontal, vertically, diagonal);
+      console.clear();
+      console.table({ horizontal, vertically, diagonal });
 
       return horizontal || vertically || diagonal;
     },
   };
   const gameplay = {
     start: function () {
+      units.step.reset();
       this.createPoints();
       this.events();
     },
     restart: function () {
       victory = false;
-      units.step["x"] = getArraySize();
-      units.step["o"] = getArraySize();
-
+      units.step.reset();
       this.createPoints();
     },
     events: function () {
