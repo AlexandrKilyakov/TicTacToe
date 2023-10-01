@@ -1,4 +1,4 @@
-const TicTacToe = (function () {
+(function () {
   const size = 3;
   let victory = false;
 
