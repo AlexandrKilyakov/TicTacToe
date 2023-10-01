@@ -1,4 +1,6 @@
 const TicTacToe = (function () {
+  let victory = false;
+
   const selectors = {
     game: "[data-game]",
     restart: ".restart",
@@ -18,9 +20,41 @@ const TicTacToe = (function () {
       x: getArraySize(),
       o: getArraySize(),
     },
-  };
+    get: () => {
+      return game.dataset.unit;
+    },
+    set: (value) => {
+      const unit = value || units.get();
+      game.dataset.unit = units.change[unit];
+    },
+    victory: (unit) => {
+      for (element of units.step[unit]) {
+        // Заполнена ли строка
+        if (element.length == size) {
+          return true;
+        }
+      }
 
-  let victory = false;
+      // Проверка по диагонали (по возрастанию)
+      if (!isNaN(units.step[unit][0])) {
+        victory = diagonalCheck(-1, 0, 1, units.step[unit]);
+      }
+
+      // Проверка по диагонали (по убыванию)
+      if (!isNaN(units.step[unit][size - 1]) && !victory) {
+        victory = diagonalCheck(-1, size - 1, -1, units.step[unit]);
+      }
+
+      if (victory) {
+        return victory;
+      }
+
+      // Есть ли совпадения
+      return units.step[unit][0].some((item) =>
+        elementMatches(0, item, units.step[unit])
+      );
+    },
+  };
 
   function createGamePoints() {
     game.style.setProperty("--width", `${100 / size}%`);
@@ -32,7 +66,7 @@ const TicTacToe = (function () {
       }
     }
 
-    setUnit("o");
+    units.set("o");
   }
 
   function getArraySize() {
@@ -43,43 +77,6 @@ const TicTacToe = (function () {
     }
 
     return array;
-  }
-
-  function getUnit() {
-    return game.dataset.unit;
-  }
-
-  function setUnit(value) {
-    const unit = value || getUnit();
-    game.dataset.unit = units.change[unit];
-  }
-
-  function victoryUnit(unit) {
-    for (element of units.step[unit]) {
-      // Заполнена ли строка
-      if (element.length == size) {
-        return true;
-      }
-    }
-
-    // Проверка по диагонали (по возрастанию)
-    if (!isNaN(units.step[unit][0])) {
-      victory = diagonalCheck(-1, 0, 1, units.step[unit]);
-    }
-
-    // Проверка по диагонали (по убыванию)
-    if (!isNaN(units.step[unit][size - 1]) && !victory) {
-      victory = diagonalCheck(-1, size - 1, -1, units.step[unit]);
-    }
-
-    if (victory) {
-      return victory;
-    }
-
-    // Есть ли совпадения
-    return units.step[unit][0].some((item) =>
-      elementMatches(0, item, units.step[unit])
-    );
   }
 
   function arrayCheck(i, arr) {
@@ -135,11 +132,11 @@ const TicTacToe = (function () {
       return;
     }
 
-    const unit = getUnit();
+    const unit = units.get();
     point.classList.add(`here-${unit}`);
     units.step[unit][~~point.dataset.y].push(~~point.dataset.x);
 
-    victory = victoryUnit(unit);
+    victory = units.victory(unit);
 
     // Если победитель определен
     if (victory) {
@@ -147,7 +144,7 @@ const TicTacToe = (function () {
       return;
     }
 
-    setUnit();
+    units.set();
   }
 
   function start() {
