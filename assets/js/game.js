@@ -17,8 +17,17 @@
     },
     step: {
       reset: function () {
-        this.x = getArraySize();
-        this.o = getArraySize();
+        this.x = this.arraySize();
+        this.o = this.arraySize();
+      },
+      arraySize: function () {
+        const array = [];
+
+        for (let i = 0; i < size; i++) {
+          array.push([]);
+        }
+
+        return array;
       },
     },
     check: {
@@ -160,16 +169,6 @@
       units.set();
     },
   };
-
-  function getArraySize() {
-    const array = [];
-
-    for (let i = 0; i < size; i++) {
-      array.push([]);
-    }
-
-    return array;
-  }
 
   gameplay.start();
 })();
