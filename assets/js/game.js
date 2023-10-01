@@ -20,54 +20,143 @@ const TicTacToe = (function () {
       x: getArraySize(),
       o: getArraySize(),
     },
-    get: () => {
+    check: {
+      horizontal: function (unit) {
+        // Проверка по горизонтали. Проверяем, заполнена ли строка
+        for (element of units.step[unit]) {
+          if (element.length == size) {
+            return true;
+          }
+        }
+
+        return false;
+      },
+      vertically: function (unit) {
+        // Проверка по вертикали. Проверяем, есть ли совпадения
+        return units.step[unit][0].some((item) =>
+          this.totalNumber(0, item, units.step[unit])
+        );
+      },
+      diagonal: function (i, item, step, arr) {
+        i++;
+
+        let check = this.timeStop(i, arr);
+
+        if (check != "ok") {
+          return check;
+        }
+
+        return (
+          arr[i].includes(item) && this.diagonal(i, item + step, step, arr)
+        );
+      },
+      diagonals: function (unit) {
+        // Проверка по диагонали (по возрастанию)
+        if (!isNaN(units.step[unit][0])) {
+          victory = this.diagonal(-1, 0, 1, units.step[unit]);
+        }
+
+        // Проверка по диагонали (по убыванию)
+        if (!isNaN(units.step[unit][size - 1]) && !victory) {
+          victory = this.diagonal(-1, size - 1, -1, units.step[unit]);
+        }
+
+        return victory;
+      },
+      totalNumber: function (i, item, arr) {
+        i++;
+
+        let check = this.timeStop(i, arr);
+
+        if (check != "ok") {
+          return check;
+        }
+
+        return arr[i].includes(item) && this.totalNumber(i, item, arr);
+      },
+      timeStop: function (i, arr) {
+        // Если дошли до конца массива
+        if (arr.length <= i) {
+          return true;
+        }
+
+        // Если пусто
+        if (!arr[i].length) {
+          return false;
+        }
+
+        return "ok";
+      },
+    },
+    get: function () {
       return game.dataset.unit;
     },
-    set: (value) => {
+    set: function (value) {
       const unit = value || units.get();
       game.dataset.unit = units.change[unit];
     },
-    victory: (unit) => {
-      for (element of units.step[unit]) {
-        // Заполнена ли строка
-        if (element.length == size) {
-          return true;
+    victory: function (unit) {
+      const horizontal = this.check.horizontal(unit);
+      const vertically = this.check.vertically(unit);
+      const diagonal = this.check.diagonals(unit);
+
+      console.log(horizontal, vertically, diagonal);
+
+      return horizontal || vertically || diagonal;
+    },
+  };
+  const gameplay = {
+    start: function () {
+      this.createPoints();
+      this.events();
+    },
+    restart: function () {
+      victory = false;
+      units.step["x"] = getArraySize();
+      units.step["o"] = getArraySize();
+
+      this.createPoints();
+    },
+    events: function () {
+      btnRestart.addEventListener("click", gameplay.restart);
+      game.addEventListener("click", ({ target }) => {
+        this.clickPoint(target);
+      });
+    },
+    createPoints: function () {
+      game.style.setProperty("--width", `${100 / size}%`);
+      game.innerHTML = "";
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          game.innerHTML += `<div class="point" data-y="${y}" data-x="${x}"></div>`;
         }
       }
 
-      // Проверка по диагонали (по возрастанию)
-      if (!isNaN(units.step[unit][0])) {
-        victory = diagonalCheck(-1, 0, 1, units.step[unit]);
+      units.set("o");
+    },
+    clickPoint: function (target) {
+      const point = target.closest(selectors.point);
+
+      if (!point) {
+        return;
       }
 
-      // Проверка по диагонали (по убыванию)
-      if (!isNaN(units.step[unit][size - 1]) && !victory) {
-        victory = diagonalCheck(-1, size - 1, -1, units.step[unit]);
-      }
+      const unit = units.get();
+      point.classList.add(`here-${unit}`);
+      units.step[unit][~~point.dataset.y].push(~~point.dataset.x);
 
+      victory = units.victory(unit);
+
+      // Если победитель определен
       if (victory) {
-        return victory;
+        gameplay.restart();
+        return;
       }
 
-      // Есть ли совпадения
-      return units.step[unit][0].some((item) =>
-        elementMatches(0, item, units.step[unit])
-      );
+      units.set();
     },
   };
-
-  function createGamePoints() {
-    game.style.setProperty("--width", `${100 / size}%`);
-    game.innerHTML = "";
-
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        game.innerHTML += `<div class="point" data-y="${y}" data-x="${x}"></div>`;
-      }
-    }
-
-    units.set("o");
-  }
 
   function getArraySize() {
     const array = [];
@@ -79,82 +168,5 @@ const TicTacToe = (function () {
     return array;
   }
 
-  function arrayCheck(i, arr) {
-    // Если дошли до конца массива
-    if (arr.length <= i) {
-      return true;
-    }
-
-    // Если пусто
-    if (!arr[i].length) {
-      return false;
-    }
-
-    return "ok";
-  }
-
-  function diagonalCheck(i, item, step, arr) {
-    i++;
-
-    let check = arrayCheck(i, arr);
-
-    if (check != "ok") {
-      return check;
-    }
-
-    return arr[i].includes(item) && diagonalCheck(i, item + step, step, arr);
-  }
-
-  function elementMatches(i, item, arr) {
-    i++;
-
-    let check = arrayCheck(i, arr);
-
-    if (check != "ok") {
-      return check;
-    }
-
-    return arr[i].includes(item) && elementMatches(i, item, arr);
-  }
-
-  function restartGame() {
-    victory = false;
-    units.step["x"] = getArraySize();
-    units.step["o"] = getArraySize();
-
-    createGamePoints();
-  }
-
-  function clickPoint(target) {
-    const point = target.closest(selectors.point);
-
-    if (!point) {
-      return;
-    }
-
-    const unit = units.get();
-    point.classList.add(`here-${unit}`);
-    units.step[unit][~~point.dataset.y].push(~~point.dataset.x);
-
-    victory = units.victory(unit);
-
-    // Если победитель определен
-    if (victory) {
-      restartGame();
-      return;
-    }
-
-    units.set();
-  }
-
-  function start() {
-    createGamePoints();
-
-    btnRestart.addEventListener("click", restartGame);
-    game.addEventListener("click", ({ target }) => {
-      clickPoint(target);
-    });
-  }
-
-  start();
+  gameplay.start();
 })();
