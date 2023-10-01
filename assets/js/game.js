@@ -9,7 +9,6 @@
   };
 
   const game = document.querySelector(selectors.game);
-  const btnRestart = document.querySelector(selectors.restart);
 
   const units = {
     change: {
@@ -110,6 +109,7 @@
     },
   };
   const gameplay = {
+    btnRestart: document.querySelector(selectors.restart),
     start: function () {
       units.step.reset();
       this.createPoints();
@@ -121,7 +121,7 @@
       this.createPoints();
     },
     events: function () {
-      btnRestart.addEventListener("click", gameplay.restart);
+      this.btnRestart.addEventListener("click", gameplay.restart.bind(this));
       game.addEventListener("click", ({ target }) => {
         this.clickPoint(target);
       });
