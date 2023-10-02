@@ -10,7 +10,9 @@
 
   const game = document.querySelector(selectors.game);
 
-  const units_ = (() => {
+  game.addEventListener("click", _clickPoint);
+
+  const units = (() => {
     const _change = {
       x: "o",
       o: "x",
@@ -18,11 +20,14 @@
 
     const step = (() => {
       let x = null,
-        y = null;
+        o = null;
+
+      pubsub.on("gameplay_start", reset);
+      pubsub.on("gameplay_restart", reset);
 
       function reset() {
-        x = _arraySize();
-        y = _arraySize();
+        step.x = _arraySize();
+        step.o = _arraySize();
       }
 
       function _arraySize() {
@@ -35,34 +40,30 @@
         return array;
       }
 
-      reset();
-
-      return { x, y, reset };
+      return { x, o, reset };
     })();
 
     const check = (() => {
       // Проверка по горизонтали. Проверяем, заполнена ли строка
-      function horizontal(unit, array) {
-        return array[unit].some((element) => element.length == size);
+      function horizontal(array) {
+        return array.some((element) => element.length == size);
       }
 
       // Проверка по вертикали. Проверяем, есть ли совпадения
-      function vertically(unit, array) {
-        return array[unit][0].some((item) =>
-          _totalNumber(0, item, array[unit])
-        );
+      function vertically(array) {
+        return array[0].some((item) => _totalNumber(0, item, array));
       }
 
-      function diagonals(unit, step) {
+      function diagonals(step) {
         let result = false;
         // Проверка по диагонали (по возрастанию)
-        if (!isNaN(step[unit][0])) {
-          result = _diagonal(-1, 0, 1, step[unit]);
+        if (!isNaN(step[0])) {
+          result = _diagonal(-1, 0, 1, step);
         }
 
         // Проверка по диагонали (по убыванию)
-        if (!isNaN(step[unit][size - 1]) && !result) {
-          result = _diagonal(-1, size - 1, -1, step[unit]);
+        if (!isNaN(step[size - 1]) && !result) {
+          result = _diagonal(-1, size - 1, -1, step);
         }
 
         return result;
@@ -77,9 +78,7 @@
           return check;
         }
 
-        return (
-          arr[i].includes(item) && this.diagonal(i, item + step, step, arr)
-        );
+        return arr[i].includes(item) && _diagonal(i, item + step, step, arr);
       }
 
       function _totalNumber(i, item, arr) {
@@ -91,7 +90,7 @@
           return check;
         }
 
-        return arr[i].includes(item) && this.totalNumber(i, item, arr);
+        return arr[i].includes(item) && _totalNumber(i, item, arr);
       }
 
       function _timeStop(i, arr) {
@@ -126,10 +125,10 @@
       game.dataset.unit = getChangeUnit(unit);
     }
 
-    function victoryUnit(unit) {
-      const horizontal = check.horizontal(unit);
-      const vertically = check.vertically(unit);
-      const diagonal = check.diagonals(unit);
+    function victoryUnit(array) {
+      const horizontal = check.horizontal(array);
+      const vertically = check.vertically(array);
+      const diagonal = check.diagonals(array);
       // console.clear();
       // console.table({ horizontal, vertically, diagonal });
 
@@ -146,137 +145,30 @@
     };
   })();
 
-  const units = {
-    change: {
-      x: "o",
-      o: "x",
-    },
-    step: {
-      reset: function () {
-        this.x = this.arraySize();
-        this.o = this.arraySize();
-      },
-      arraySize: function () {
-        const array = [];
+  const gameplay = (() => {
+    const btnRestart = document.querySelector(selectors.restart);
 
-        for (let i = 0; i < size; i++) {
-          array.push([]);
-        }
+    const _DEFAULT_STYLE = "--width";
+    const _DEFAULT_PROPERTY = `${100 / size}%`;
 
-        return array;
-      },
-    },
-    check: {
-      horizontal: function (unit) {
-        // Проверка по горизонтали. Проверяем, заполнена ли строка
-        for (element of units.step[unit]) {
-          if (element.length == size) {
-            return true;
-          }
-        }
+    function start() {
+      _createPoints();
+      _events();
+      pubsub.emit("gameplay_start");
+    }
 
-        return false;
-      },
-      vertically: function (unit) {
-        // Проверка по вертикали. Проверяем, есть ли совпадения
-        return units.step[unit][0].some((item) =>
-          this.totalNumber(0, item, units.step[unit])
-        );
-      },
-      diagonal: function (i, item, step, arr) {
-        i++;
-
-        let check = this.timeStop(i, arr);
-        console.log(i, arr[i], arr[i].includes(item));
-
-        if (check != "ok") {
-          return check;
-        }
-
-        return (
-          arr[i].includes(item) && this.diagonal(i, item + step, step, arr)
-        );
-      },
-      diagonals: function (unit) {
-        let result = false;
-        console.clear();
-        // Проверка по диагонали (по возрастанию)
-        if (!isNaN(units.step[unit][0])) {
-          result = this.diagonal(-1, 0, 1, units.step[unit]);
-        }
-
-        // Проверка по диагонали (по убыванию)
-        if (!isNaN(units.step[unit][size - 1]) && !result) {
-          result = this.diagonal(-1, size - 1, -1, units.step[unit]);
-        }
-
-        return result;
-      },
-      totalNumber: function (i, item, arr) {
-        i++;
-
-        let check = this.timeStop(i, arr);
-
-        if (check != "ok") {
-          return check;
-        }
-
-        return arr[i].includes(item) && this.totalNumber(i, item, arr);
-      },
-      timeStop: function (i, arr) {
-        let result = "ok";
-
-        // Если дошли до конца массива или i меньше 0
-        if (!arr[i] || i < 0) {
-          result = true;
-        }
-
-        // Если пусто
-        if (arr[i] && !arr[i].length) {
-          result = false;
-        }
-
-        return result;
-      },
-    },
-    get: function () {
-      return game.dataset.unit;
-    },
-    set: function (value) {
-      const unit = value || units.get();
-      game.dataset.unit = units.change[unit];
-    },
-    victory: function (unit) {
-      const horizontal = this.check.horizontal(unit);
-      const vertically = this.check.vertically(unit);
-      const diagonal = this.check.diagonals(unit);
-      // console.clear();
-      // console.table({ horizontal, vertically, diagonal });
-
-      return horizontal || vertically || diagonal;
-    },
-  };
-
-  const gameplay = {
-    btnRestart: document.querySelector(selectors.restart),
-    start: function () {
-      units.step.reset();
-      this.createPoints();
-      this.events();
-    },
-    restart: function () {
+    function restart() {
       victory = false;
-      units.step.reset();
-      this.createPoints();
-    },
-    events: function () {
-      this.btnRestart.addEventListener("click", gameplay.restart.bind(this));
-      game.addEventListener("click", ({ target }) => {
-        this.clickPoint(target);
-      });
-    },
-    createPoints: function () {
-      game.style.setProperty("--width", `${100 / size}%`);
+      _createPoints();
+      pubsub.emit("gameplay_restart");
+    }
+
+    function _events() {
+      btnRestart.addEventListener("click", restart);
+    }
+
+    function _createPoints() {
+      game.style.setProperty(_DEFAULT_STYLE, _DEFAULT_PROPERTY);
       game.innerHTML = "";
 
       for (let y = 0; y < size; y++) {
@@ -286,29 +178,32 @@
       }
 
       units.set("o");
-    },
-    clickPoint: function (target) {
-      const point = target.closest(selectors.point);
+    }
 
-      if (!point) {
-        return;
-      }
+    return { start, restart };
+  })();
 
-      const unit = units.get();
-      point.classList.add(`here-${unit}`);
-      units.step[unit][~~point.dataset.y].push(~~point.dataset.x);
+  function _clickPoint({ target }) {
+    const point = target.closest(selectors.point);
 
-      victory = units.victory(unit);
+    if (!point) {
+      return;
+    }
+    const unit = units.get();
+    point.classList.add(`here-${unit}`);
+    units.step[unit][~~point.dataset.y].push(~~point.dataset.x);
+    console.table(units.step[unit]);
 
-      // Если победитель определен
-      if (victory) {
-        gameplay.restart();
-        return;
-      }
+    victory = units.victory(units.step[unit]);
 
-      units.set();
-    },
-  };
+    // Если победитель определен
+    if (victory) {
+      gameplay.restart();
+      return;
+    }
+
+    units.set();
+  }
 
   gameplay.start();
 })();
