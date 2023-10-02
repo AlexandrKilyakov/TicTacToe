@@ -51,6 +51,7 @@
         i++;
 
         let check = this.timeStop(i, arr);
+        console.log(i, arr[i], arr[i].includes(item));
 
         if (check != "ok") {
           return check;
@@ -61,17 +62,19 @@
         );
       },
       diagonals: function (unit) {
+        let result = false;
+        console.clear();
         // Проверка по диагонали (по возрастанию)
         if (!isNaN(units.step[unit][0])) {
-          victory = this.diagonal(-1, 0, 1, units.step[unit]);
+          result = this.diagonal(-1, 0, 1, units.step[unit]);
         }
 
         // Проверка по диагонали (по убыванию)
-        if (!isNaN(units.step[unit][size - 1]) && !victory) {
-          victory = this.diagonal(-1, size - 1, -1, units.step[unit]);
+        if (!isNaN(units.step[unit][size - 1]) && !result) {
+          result = this.diagonal(-1, size - 1, -1, units.step[unit]);
         }
 
-        return victory;
+        return result;
       },
       totalNumber: function (i, item, arr) {
         i++;
@@ -111,12 +114,13 @@
       const horizontal = this.check.horizontal(unit);
       const vertically = this.check.vertically(unit);
       const diagonal = this.check.diagonals(unit);
-      console.clear();
-      console.table({ horizontal, vertically, diagonal });
+      // console.clear();
+      // console.table({ horizontal, vertically, diagonal });
 
       return horizontal || vertically || diagonal;
     },
   };
+
   const gameplay = {
     btnRestart: document.querySelector(selectors.restart),
     start: function () {
