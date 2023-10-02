@@ -13,18 +13,14 @@
 
   function getUnit(name) {
     const element = document.querySelector(selectors[name]);
+    const counter = 0;
+
+    element.innerHTML = counter;
 
     return {
       DOM: element,
-      counter: 0,
+      counter: counter,
     };
-  }
-
-  function start() {
-    console.log(units);
-    for (item of units) {
-      item.DOM.innerHTML = item.counter;
-    }
   }
 
   function setValue(array) {
@@ -35,6 +31,5 @@
     }
   }
 
-  pubsub.on("static_start", start);
   pubsub.on("static_restart", setValue);
 })();

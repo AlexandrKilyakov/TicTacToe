@@ -23,10 +23,9 @@
     };
 
     const step = (() => {
-      let x = null,
-        o = null;
+      let x = _arraySize(),
+        o = _arraySize();
 
-      pubsub.on("gameplay_start", reset);
       pubsub.on("gameplay_restart", reset);
 
       function reset() {
@@ -161,8 +160,6 @@
     const _DEFAULT_PROPERTY = `${100 / size}%`;
 
     function start() {
-      pubsub.emit("static_start");
-      pubsub.emit("gameplay_start");
       _createPoints();
       _events();
     }
