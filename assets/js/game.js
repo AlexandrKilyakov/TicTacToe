@@ -9,13 +9,17 @@
   };
 
   const game = document.querySelector(selectors.game);
-
   game.addEventListener("click", _clickPoint);
 
   const units = (() => {
     const _change = {
       x: "o",
       o: "x",
+    };
+
+    const _name = {
+      x: "player",
+      o: "bot",
     };
 
     const step = (() => {
@@ -116,6 +120,10 @@
       return _change[unit];
     }
 
+    function getNameUnit(unit) {
+      return _name[unit];
+    }
+
     function getUnit() {
       return game.dataset.unit;
     }
@@ -139,6 +147,7 @@
       step: step,
       check: check,
       change: getChangeUnit,
+      name: getNameUnit,
       get: getUnit,
       set: setUnit,
       victory: victoryUnit,
@@ -152,15 +161,21 @@
     const _DEFAULT_PROPERTY = `${100 / size}%`;
 
     function start() {
+      pubsub.emit("static_start");
+      pubsub.emit("gameplay_start");
       _createPoints();
       _events();
-      pubsub.emit("gameplay_start");
     }
 
     function restart() {
+      pubsub.emit("gameplay_restart");
+      pubsub.emit("static_restart", {
+        victory: victory,
+        name: units.name(units.get()),
+      });
+
       victory = false;
       _createPoints();
-      pubsub.emit("gameplay_restart");
     }
 
     function _events() {
@@ -192,7 +207,6 @@
     const unit = units.get();
     point.classList.add(`here-${unit}`);
     units.step[unit][~~point.dataset.y].push(~~point.dataset.x);
-    console.table(units.step[unit]);
 
     victory = units.victory(units.step[unit]);
 
