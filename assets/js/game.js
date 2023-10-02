@@ -10,6 +10,142 @@
 
   const game = document.querySelector(selectors.game);
 
+  const units_ = (() => {
+    const _change = {
+      x: "o",
+      o: "x",
+    };
+
+    const step = (() => {
+      let x = null,
+        y = null;
+
+      function reset() {
+        x = _arraySize();
+        y = _arraySize();
+      }
+
+      function _arraySize() {
+        const array = [];
+
+        for (let i = 0; i < size; i++) {
+          array.push([]);
+        }
+
+        return array;
+      }
+
+      reset();
+
+      return { x, y, reset };
+    })();
+
+    const check = (() => {
+      // Проверка по горизонтали. Проверяем, заполнена ли строка
+      function horizontal(unit, array) {
+        return array[unit].some((element) => element.length == size);
+      }
+
+      // Проверка по вертикали. Проверяем, есть ли совпадения
+      function vertically(unit, array) {
+        return array[unit][0].some((item) =>
+          _totalNumber(0, item, array[unit])
+        );
+      }
+
+      function diagonals(unit, step) {
+        let result = false;
+        // Проверка по диагонали (по возрастанию)
+        if (!isNaN(step[unit][0])) {
+          result = _diagonal(-1, 0, 1, step[unit]);
+        }
+
+        // Проверка по диагонали (по убыванию)
+        if (!isNaN(step[unit][size - 1]) && !result) {
+          result = _diagonal(-1, size - 1, -1, step[unit]);
+        }
+
+        return result;
+      }
+
+      function _diagonal(i, item, step, arr) {
+        i++;
+
+        let check = _timeStop(i, arr);
+
+        if (check != "ok") {
+          return check;
+        }
+
+        return (
+          arr[i].includes(item) && this.diagonal(i, item + step, step, arr)
+        );
+      }
+
+      function _totalNumber(i, item, arr) {
+        i++;
+
+        let check = _timeStop(i, arr);
+
+        if (check != null) {
+          return check;
+        }
+
+        return arr[i].includes(item) && this.totalNumber(i, item, arr);
+      }
+
+      function _timeStop(i, arr) {
+        let result = null;
+
+        // Если дошли до конца массива или i меньше 0
+        if (!arr[i] || i < 0) {
+          result = true;
+        }
+
+        // Если пусто
+        if (arr[i] && !arr[i].length) {
+          result = false;
+        }
+
+        return result;
+      }
+
+      return { horizontal, vertically, diagonals };
+    })();
+
+    function getChangeUnit(unit) {
+      return _change[unit];
+    }
+
+    function getUnit() {
+      return game.dataset.unit;
+    }
+
+    function setUnit(value) {
+      const unit = value || getUnit();
+      game.dataset.unit = getChangeUnit(unit);
+    }
+
+    function victoryUnit(unit) {
+      const horizontal = check.horizontal(unit);
+      const vertically = check.vertically(unit);
+      const diagonal = check.diagonals(unit);
+      // console.clear();
+      // console.table({ horizontal, vertically, diagonal });
+
+      return horizontal || vertically || diagonal;
+    }
+
+    return {
+      step: step,
+      check: check,
+      change: getChangeUnit,
+      get: getUnit,
+      set: setUnit,
+      victory: victoryUnit,
+    };
+  })();
+
   const units = {
     change: {
       x: "o",
