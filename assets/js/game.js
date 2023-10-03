@@ -134,8 +134,6 @@
       const horizontal = check.horizontal(array);
       const vertically = check.vertically(array);
       const diagonal = check.diagonals(array);
-      // console.clear();
-      // console.table({ horizontal, vertically, diagonal });
 
       return horizontal || vertically || diagonal;
     }
