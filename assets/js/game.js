@@ -92,17 +92,15 @@
       }
 
       function _timeStop(i, arr) {
-        let result = null;
-
         if (!arr[i] || i < 0) {
-          result = true;
+          return true;
         }
 
         if (arr[i] && arr[i].length === 0) {
-          result = false;
+          return false;
         }
 
-        return result;
+        return null;
       }
 
       return { horizontal, vertically, diagonals };
