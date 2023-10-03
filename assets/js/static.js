@@ -26,9 +26,10 @@
   function setValue(array) {
     if (array.victory) {
       units[array.name].DOM.innerHTML = ++units[array.name].counter;
-    } else {
-      units["tie"].DOM.innerHTML = ++units["tie"].counter;
+      return true;
     }
+
+    units["tie"].DOM.innerHTML = ++units["tie"].counter;
   }
 
   pubsub.on("static_restart", setValue);

@@ -77,7 +77,7 @@
 
         let check = _timeStop(i, arr);
 
-        if (check != "ok") {
+        if (check != null) {
           return check;
         }
 
@@ -99,13 +99,11 @@
       function _timeStop(i, arr) {
         let result = null;
 
-        // Если дошли до конца массива или i меньше 0
         if (!arr[i] || i < 0) {
           result = true;
         }
 
-        // Если пусто
-        if (arr[i] && !arr[i].length) {
+        if (arr[i] && arr[i].length === 0) {
           result = false;
         }
 
