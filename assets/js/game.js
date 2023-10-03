@@ -12,14 +12,9 @@
   game.addEventListener("click", _clickPoint);
 
   const units = (() => {
-    const _change = {
-      x: "o",
-      o: "x",
-    };
-
-    const _name = {
-      x: "player",
-      o: "bot",
+    const gamers = {
+      x: _createGamer("o", "player"),
+      o: _createGamer("x", "bot"),
     };
 
     const step = (() => {
@@ -113,12 +108,19 @@
       return { horizontal, vertically, diagonals };
     })();
 
+    function _createGamer(change, name) {
+      return {
+        change,
+        name,
+      };
+    }
+
     function getChangeUnit(unit) {
-      return _change[unit];
+      return gamers[unit].change;
     }
 
     function getNameUnit(unit) {
-      return _name[unit];
+      return gamers[unit].name;
     }
 
     function getUnit() {
